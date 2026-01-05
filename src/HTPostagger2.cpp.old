@@ -1,0 +1,222 @@
+// #include "HTPostagger2.h"
+// #include "onnxruntime_c_api.h"
+// #include "onnxruntime_cxx_api.h"
+// // #include <mutex>
+// // std::mutex tokenizer_mutex;
+
+// bool ReadUserPreferencesFromFilePOS(const std::string& filename, PosDict* message) {
+//     std::fstream input(filename, std::ios::in | std::ios::binary);
+//     if (!input) {
+//         std::cerr << "File " << filename << " not found." << std::endl;
+//         return false;
+//     }
+
+//     // 파일에서 데이터를 파싱(역직렬화)합니다.
+//     if (!message->ParseFromIstream(&input)) {
+//         std::cerr << "Failed to parse UserPreferences from file." << std::endl;
+//         return false;
+//     }
+//     return true;
+// }
+
+
+
+// HTPostagger2::HTPostagger2(const wchar_t* model_path,const string& dictpath,const string& tokenizerpath) {
+//     GOOGLE_PROTOBUF_VERIFY_VERSION;
+//     // cout << "hi" << endl;
+//     const std::string filename = dictpath;
+//     PosDict prefs;
+//     if (ReadUserPreferencesFromFilePOS(filename, &prefs)) {
+//         std::cerr << "loadded" << std::endl;
+//     }
+//     // cout << L"HI" << endl;
+//     this->dict = prefs.i2p();
+//     // cout << L"HI2" << endl;
+    
+//     this->env = std::make_unique<Ort::Env>(OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR, "Default");
+//     // cout << L"HI3" << endl;
+    
+//     this->session = this->init_session(model_path);
+    
+//     // auto blob = LoadBytesFromFile(tokenizerpath);
+//     // this->tokenizer = FromBlobJSON(blob);
+    
+//     // cout << L"END" << endl;
+// }
+
+// HTPostagger2::~HTPostagger2() {
+//     google::protobuf::ShutdownProtobufLibrary();
+// }
+
+
+// vector<vector<int>> HTPostagger2::encode_batch(const vector<string>& data){
+//     // std::lock_guard<std::mutex> lock(tokenizer_mutex);
+//     std::shared_lock<std::shared_mutex> lock(mtx_);
+//     vector<vector<int32_t>> res = move(tokenizer->EncodeBatch(data,true));
+//     vector<vector<int>> padding_tok = padding_input(tokenizer,res);
+
+//     return padding_tok;
+// }
+
+
+// vector<vector<float>> HTPostagger2::get_tokens(const vector<string>& data){
+//     // vector<float> res;
+//     // cout << typeid(this->tokenizer->EncodeBatch(data,true)).name() << endl;
+//     // exit(0);
+//     // vector<int> res = this->encode_batch(data,);
+//     // vector<vector<int32_t>> res = move(this->tokenizer->EncodeBatch(data,true));
+//     // vector<vector<int>> padding_tok = padding_input(this->tokenizer,res);
+//     vector<vector<int>> padding_tok = this->encode_batch(data);
+
+//     vector<vector<float>> res_tok;
+//     for(int i = 0;i<padding_tok.size();i++){
+//         vector<float> padding_tok_tmp;
+
+//         for(int j=0;j<padding_tok[i].size();j++){
+//             // cout << static_cast<float>(padding_tok[i][j]) << L" ";
+//             padding_tok_tmp.push_back(move(float(padding_tok[i][j])));
+//         }
+//         // cout<<endl;
+//         // exit(0);
+//         res_tok.push_back(move(padding_tok_tmp));
+//         padding_tok_tmp.clear();
+//     }
+
+//     return res_tok;
+// }
+
+// vector<vector<string>> HTPostagger2::get_result(vector<int> tmp,vector<string> resrun,string data_){
+//     std::shared_lock<std::shared_mutex> lock(mtx_);
+//     vector<vector<string>> res = split_eoj(this->tokenizer,tmp,resrun,data_);
+//     return res;
+// }
+// vector<Morphs> HTPostagger2::postagger(const vector<string>& data_){
+//     //vector<vector<int>> data;
+//     vector<Morphs> resmorph;
+//     vector<vector<float>> tokens = this->get_tokens(data_);
+//     vector<vector<string>> resrun;
+    
+//     // if 
+//     try{
+//         resrun = this->run(tokens);
+//     }catch(const Ort::Exception& e){
+//         cerr << e.what() << endl;
+//         // exit(0);
+//     }
+//     try{
+//         for (int i=0;i<tokens.size();i++){
+//             vector<int> tmp;
+//             for (int j = 0; j < tokens[i].size(); j++) {
+//                 // cout << tokens[i][j] <<L" ";
+//                 tmp.push_back(int(tokens[i][j]));
+//             }
+            
+//             vector<vector<string>> res = split_eoj(this->tokenizer,tmp,resrun[i],data_[i]);
+//             Morphs morph_tmp;
+//             for (int j=0;j<res.size();j++){
+//                 // cout << res[j].size() << L";
+//                 morph_tmp.toks.push_back(res[j][0]);
+//                 morph_tmp.poss.push_back(res[j][1]);
+//                 // cout << s2ws(res[j][0]) << L"/" << s2ws(res[j][1]) << L" ";
+//             }
+//             resmorph.push_back(morph_tmp);
+//         }
+//         // cout << endl;
+//     }
+//     catch(const exception& e){
+//         cout << e.what() << endl;
+//     }
+//     return resmorph;
+// }
+    
+// vector<vector<string>> HTPostagger2::run(vector<vector<float>> data) {
+    
+//     vector<int64_t> input_shape = { (int64_t)data.size(),(int64_t)data[0].size() };
+    
+//     size_t input_data_size = input_shape[0] * input_shape[1];
+//     // cout << input_data_size << endl;
+//     vector<float> restmp;
+//     restmp.reserve(input_data_size);
+//     // Ort::Value input_tensors = make_input(restmp,data,input_data_size,input_shape);
+//      for (int i = 0; i < data.size(); i++) {
+//         for (int j = 0; j < data[0].size(); j++) {
+//             // wcout<< data[i][j] << " ";
+//             restmp.push_back(float((data[i][j])));
+//         }
+//     }
+//     Ort::Value input_tensors = Ort::Value::CreateTensor<float>(
+//         this->memory_info,                     // 메모리 위치
+//         restmp.data(),               // 데이터 포인터
+//         restmp.size(),               // 데이터 총 크기 (바이트가 아닌 요소 개수)
+//         input_shape.data(),              // 모양 포인터
+//         input_shape.size()              // 모양 배열 크기
+//     );
+    
+//     vector<Ort::Value> output_tensors;
+
+//     try {
+//         output_tensors = (*this->session).Run(Ort::RunOptions(nullptr), this->input_node_names,&input_tensors, 1, this->output_node_names, 1);
+    
+//     } catch (const Ort::Exception& e) {
+//         std::cerr << "ONNX Runtime error: " << e.what() << std::endl;
+//         // exit(0);
+//     }
+//     float* output_prob = output_tensors[0].GetTensorMutableData<float>();
+//     std::vector<float> safe_results;
+//     // 출력 텐서의 크기 계산 (Batch Size가 커지면 이 값도 큼)
+//     auto type_info = output_tensors[0].GetTensorTypeAndShapeInfo();
+//     size_t output_count = type_info.GetElementCount();
+
+//     // 3. [핵심] 내 메모리 공간(std::vector)으로 값 복사 (Deep Copy)
+//     // assign을 쓰면 벡터 크기 자동 조정 및 데이터 복사가 일어남
+//     safe_results.assign(output_prob, output_prob + output_count);
+
+//     for (auto s:safe_results){
+//         cout << static_cast<int>(s) << endl;
+//     }
+//     exit(0);
+//     return get_prob(safe_results,input_shape,1);
+// }
+// vector<vector<string>> HTPostagger2::get_prob(vector<float> output_tensors,vector<int64_t> input_shape,int mode){
+//     // std::locale::global(std::locale("")); 
+
+//     int cnt = 0;
+//     vector<vector<string>> res;
+
+//     vector<string> restmp;
+//     // float* tmp = output_tensors
+//     // cout << input_shape[1] * input_shape[0] << endl;
+//     try{
+//         for (int64_t j = 0; j < input_shape[1] * input_shape[0]; j++) {
+
+//             int dictlen = this->dict.size();
+
+//             auto max_it = std::max_element(output_tensors.begin()+(j * dictlen), output_tensors.begin()+(j * dictlen)+dictlen);
+            
+//             // 포인터 간의 거리를 계산하여 인덱스(ArgMax) 구하기
+//             int maxi = std::distance(output_tensors.begin()+(j * dictlen), max_it);
+//             restmp.push_back(this->dict[maxi]);
+            
+//             cnt++;
+//             if (cnt % input_shape[1] == 0){
+//                 res.push_back(move(restmp));
+//                 restmp.clear();
+//             }
+//         }
+//     }catch(const std::exception e){
+//         cerr << e.what() << endl;
+//         // exit(0);
+//     }
+    
+//     // }
+//     return res;
+// }
+
+// int main(){
+//     auto blob = LoadBytesFromFile("htmorphs/tokenizer/tokenizer.json");
+//     unique_ptr<HFTokenizer> tokenizer = FromBlobJSON(blob);
+
+//     HTPostagger2 pos(L"htmorphs/pos-model-uint8.onnx","htmorphs/htpostagger.bin","htmorphs/tokenizer/tokenizer.json");
+
+//     return 0;
+// }

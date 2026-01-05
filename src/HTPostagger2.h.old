@@ -1,0 +1,45 @@
+
+// #pragma once
+// #ifndef HTPOSTAGGER2_H
+// #define HTPOSTAGGER2_H
+
+// #include "BaseORT.h"
+// #include "pos_dict.pb.h"
+// #include "hftokenizer2.h"
+// #include <fstream>
+// #include <iostream>
+// #include <string>
+// #include <shared_mutex> // C++17 필수
+// #include "utils.h"
+
+// using namespace std;
+// using namespace htpostagger;
+
+// struct Morphs {
+//     vector<string> toks;
+//     vector<string> poss;
+// };
+
+// bool ReadUserPreferencesFromFilePOS(const std::string& filename, PosDict* message);
+
+// class HTPostagger2: public BaseORT {
+// public:
+//     // mutable 키워드가 중요합니다. 
+//     // const 함수(읽기 전용) 내부에서도 mutex를 잠가야 하기 때문입니다.
+//     mutable std::shared_mutex mtx_;
+//     google::protobuf::Map<int64_t,std::string> dict;
+//     unique_ptr<HFTokenizer> tokenizer;
+//     HTPostagger2(const wchar_t* model_path,const string& dictpath,const string& tokenizerpath);
+//     ~HTPostagger2();
+//     vector<vector<int>> encode_batch(const vector<string>& data);
+//     vector<vector<string>> get_result(vector<int> tmp,vector<string> resrun,string data_);
+
+//     // vector<vector<int>> encode_batch(const unique_ptr<HFTokenizer>& tokenizer, vector<string>& data);
+//     vector<vector<float>> get_tokens(const vector<string>& data);
+//     vector<Morphs> postagger(const vector<string>& data_);
+    
+//     vector<vector<string>> run(vector<vector<float>> data);
+//     vector<vector<string>> get_prob(vector<float> output_tensors,vector<int64_t> input_shape,int mode);
+// };
+
+// #endif
