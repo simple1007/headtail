@@ -98,15 +98,15 @@ target_link_libraries(_htmorphs PRIVATE utf8cpp::utf8cpp)
 #target_link_libraries(_htmorphs PRIVATE utf8cpp::utf8cpp)
 # install(TARGETS _htmorphs LIBRARY DESTINATION htmorphs)
 protobuf_generate(TARGET _htmorphs)
-if(WIN32)
-	target_include_directories(_htmorphs PRIVATE onnxruntime/include)
-	target_link_directories(_htmorphs PRIVATE onnxruntime/lib) # lib 파일 존재하는 디렉토리 지정
-	target_link_libraries(_htmorphs PRIVATE onnxruntime) # 실제로 어떤 라이브러리를 사용할지를 지정
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_include_directories(_htmorphs PRIVATE onnxruntime/onnxruntime_linux/include)
-	target_link_directories(_htmorphs PRIVATE onnxruntime/onnxruntime_linux/lib) # lib 파일 존재하는 디렉토리 지정
-	target_link_libraries(_htmorphs PRIVATE onnxruntime)# 실제로 어떤 라이브러리를 사용할지를 지정
-endif()
+# if(WIN32)
+target_include_directories(_htmorphs PRIVATE onnxruntime/include)
+target_link_directories(_htmorphs PRIVATE onnxruntime/lib) # lib 파일 존재하는 디렉토리 지정
+target_link_libraries(_htmorphs PRIVATE onnxruntime) # 실제로 어떤 라이브러리를 사용할지를 지정
+# elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+# 	target_include_directories(_htmorphs PRIVATE onnxruntime/onnxruntime_linux/include)
+# 	target_link_directories(_htmorphs PRIVATE onnxruntime/onnxruntime_linux/lib) # lib 파일 존재하는 디렉토리 지정
+# 	target_link_libraries(_htmorphs PRIVATE onnxruntime)# 실제로 어떤 라이브러리를 사용할지를 지정
+# endif()
 set(TOKENZIER_CPP_PATH src/tokenizers-cpp)
 add_subdirectory(${TOKENZIER_CPP_PATH} tokenizers EXCLUDE_FROM_ALL)
 target_include_directories(_htmorphs PRIVATE ${TOKENZIER_CPP_PATH}/include)
