@@ -8,12 +8,16 @@ dependencies = []
 
 [tool.scikit-build]
 cmake.source-dir = "."
-cmake.args = [
-    "-DCMAKE_TOOLCHAIN_FILE=C:/Users/ty341/Desktop/vcpkg/scripts/buildsystems/vcpkg.cmake" 
+sdist.include = [
+    "htmorphs/*.bin",
+    "htmorphs/*.onnx",
+    "htmorphs/*.data",
+    "htmorphs/*.proto",
+    "htmorphs/*.pkl",
+    "htmorphs/tokenizer/*.json",
+    "htmorphs/*.dll"
 ]
+
 [build-system]
 requires = ["scikit-build-core", "pybind11"]
 build-backend = "scikit_build_core.build"
-
-[tool.setuptools.package-data]
-"*" = ["htmorphs/*.bin","htmorphs/*.onnx","htmorphs/*.data","htmorphs/*.proto","htmorphs/tokenizer/*.json","htmorphs/*.dll"] 

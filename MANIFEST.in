@@ -1,0 +1,10 @@
+prune .git
+prune .gitignore
+recursive-include htmorphs *.pkl
+recursive-include htmorphs *.bin
+recursive-include htmorphs *.onnx
+recursive-include htmorphs *.onnx.data
+recursive-include htmorphs *.dll
+recursive-include htmorphs *.1.17.3
+recursive-include htmorphs *.proto
+recursive-include htmorphs tokenizer *.json

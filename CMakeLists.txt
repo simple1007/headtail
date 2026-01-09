@@ -1,6 +1,7 @@
-﻿cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.15)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 # Visual Studio (Windows) 설정
 # add_compile_options(/O2 /arch:AVX2 /fp:fast)
 if(WIN32)
@@ -34,6 +35,7 @@ set(pybind "1")
 set(CMAKE_BUILD_TYPE Release)
 project("htmorphs")
 include_directories(src)
+# include_directories(onnxruntime/include)
 #include_directories("$ENV{VCPKG_ROOT}/installed/x64-linux/include/utf8cpp")
 find_package(protobuf CONFIG REQUIRED)
 
@@ -57,11 +59,13 @@ if(${pybind} STREQUAL "1")
         src/HTTokenizer2.cpp
         src/hftokenizer.h    
         src/HTPostagger2.cpp
-	src/thread_main2.cpp
+	    src/thread_main2.cpp
         ${PROTO_FILES}
         ${PROTO_FILES2} 
     )
-    file(CHMOD htmorphs/libonnxruntime.so.1.17.3 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ)
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        file(CHMOD htmorphs/libonnxruntime.so.1.17.3 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ)
+    endif()
     install(TARGETS _htmorphs LIBRARY DESTINATION htmorphs)
 else()
     # message("111111")
